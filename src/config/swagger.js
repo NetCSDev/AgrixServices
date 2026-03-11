@@ -22,7 +22,7 @@ const swaggerDefinition = {
       description: 'Development server',
     },
     {
-      url: 'https://api.agrixservices.com',
+      url: 'https://agrixservices.onrender.com/',
       description: 'Production server',
     },
   ],
