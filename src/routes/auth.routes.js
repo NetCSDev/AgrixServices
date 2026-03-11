@@ -22,18 +22,11 @@ const {
  *             $ref: '#/components/schemas/LoginRequest'
  *     responses:
  *       200:
- *         description: OTP sent successfully
+ *         description: OTP sent successfully (includes userId for verification)
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: OTP sent to mobile number
+ *               $ref: '#/components/schemas/LoginResponse'
  *       400:
  *         $ref: '#/components/responses/ValidationError'
  */

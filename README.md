@@ -104,7 +104,7 @@ agrixservices/
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/login` - Login with mobile number (sends OTP)
+- `POST /api/auth/login` - Login with mobile number (sends OTP) and returns a `userId` used for OTP verification
 - `POST /api/auth/signup` - Sign up with user details (sends OTP)
 - `POST /api/auth/verify-otp` - Verify OTP and complete authentication
 - `POST /api/auth/resend-otp` - Resend OTP

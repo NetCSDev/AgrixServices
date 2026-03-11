@@ -86,6 +86,16 @@ const swaggerDefinition = {
           },
         },
       },
+      LoginResponse: {
+        type: 'object',
+        properties: {
+          success: { type: 'boolean', example: true },
+          message: { type: 'string', example: 'OTP sent successfully' },
+          userId: { type: 'string', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' },
+          mobile: { type: 'string', example: '+919876543210' },
+          requiresProfileCompletion: { type: 'boolean', example: false },
+        },
+      },
       SignUpRequest: {
         type: 'object',
         required: ['name', 'mobile'],
