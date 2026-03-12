@@ -5,9 +5,9 @@ const complaintService = require('../services/complaint.service');
 // @access  Private
 const submitComplaint = async (req, res, next) => {
   try {
-    const { apmc, subject, description, userId } = req.body;
+    const { apmc, subject, description, userid } = req.body;
     
-    if (!apmc || !subject || !description || !userId) {
+    if (!apmc || !subject || !description || !userid) {
       return res.status(400).json({
         success: false,
         message: 'APMC, subject, description, and userId are required',
