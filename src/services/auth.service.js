@@ -45,7 +45,7 @@ const login = async (mobile) => {
   return {
     userId: user.id,
     mobile: user.mobile,
-    requiresProfileCompletion: false,
+    requiresOTP: true,
   };
 };
 
