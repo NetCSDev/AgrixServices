@@ -1,4 +1,5 @@
 const { pool } = require('../config/db');
+const smsService = require('./sms.service');
 
 // Generate 6-digit OTP
 const generateOTP = () => {
@@ -38,10 +39,15 @@ const login = async (mobile) => {
      DO UPDATE SET otp = $3, expires_at = $4, created_at = CURRENT_TIMESTAMP, is_verified = false`,
     [user.id, mobile, otp, expiresAt]
   );
-  
-  // TODO: Send OTP via SMS service (Twilio, AWS SNS, etc.)
-  console.log(`OTP for ${mobile}: ${otp}`); // For development only
-  
+
+  // send OTP via Fast2SMS (non-blocking)
+  try {
+    await smsService.sendOTP(mobile, otp);
+  } catch (err) {
+    console.error('Failed to send OTP via SMS service:', err.message || err);
+    // Continue anyway; OTP is stored and will work if user manually enters it
+  }
+
   return {
     userId: user.id,
     mobile: user.mobile,
@@ -80,10 +86,14 @@ const signUp = async ({ mobile, name, language, address }) => {
      VALUES ($1, $2, $3, $4)`,
     [user.id, mobile, otp, expiresAt]
   );
-  
-  // TODO: Send OTP via SMS service
-  console.log(`OTP for ${mobile}: ${otp}`); // For development only
-  
+
+  // send OTP via SMS service
+  try {
+    await smsService.sendOTP(mobile, otp);
+  } catch (err) {
+    console.error('Failed to send OTP via SMS service:', err.message || err);
+  }
+
   return {
     userId: user.id,
     mobile: user.mobile,
@@ -177,9 +187,13 @@ const resendOTP = async (userId, mobile) => {
     [userId, mobile, otp, expiresAt]
   );
   
-  // TODO: Send OTP via SMS service
-  console.log(`OTP for ${mobile}: ${otp}`); // For development only
-  
+  // send OTP via SMS service
+  try {
+    await smsService.sendOTP(mobile, otp);
+  } catch (err) {
+    console.error('Failed to send OTP via SMS service:', err.message || err);
+  }
+
   return true;
 };
 

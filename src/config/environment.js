@@ -46,6 +46,10 @@ const validateConfig = () => {
   if (missing.length > 0) {
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
+
+  if (!process.env.FAST2SMS_API_KEY) {
+    console.warn('Warning: FAST2SMS_API_KEY not set. OTP SMS messages will be logged to console instead.');
+  }
 };
 
 module.exports = {
