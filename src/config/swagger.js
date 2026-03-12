@@ -116,14 +116,15 @@ const swaggerDefinition = {
       },
       SubmitComplaintRequest: {
         type: 'object',
-        required: ['user_id', 'apmc_name', 'subject', 'description'],
+        required: ['userId', 'apmc', 'subject', 'description'],
         properties: {
-          user_id: { type: 'string', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' },
-          apmc_name: { type: 'string', example: 'Mumbai APMC' },
+          userId: { type: 'string', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' },
+          apmc: { type: 'string', example: 'Mumbai APMC' },
           subject: { type: 'string', example: 'Price Issue' },
           description: { type: 'string', example: 'Incorrect pricing for wheat' },
         },
       },
+
       Error: {
         type: 'object',
         properties: {

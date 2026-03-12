@@ -5,22 +5,33 @@ const complaintService = require('../services/complaint.service');
 // @access  Private
 const submitComplaint = async (req, res, next) => {
   try {
-    const { apmc, subject, description, userid } = req.body;
-    
-    if (!apmc || !subject || !description || !userid) {
+    // Accept various naming conventions for request payloads
+    const {
+      apmc,
+      apmc_name,
+      subject,
+      description,
+      userId,
+      user_id,
+    } = req.body;
+
+    const finalApmc = apmc || apmc_name;
+    const uid = userId || user_id;
+
+    if (!finalApmc || !subject || !description || !uid) {
       return res.status(400).json({
         success: false,
         message: 'APMC, subject, description, and userId are required',
       });
     }
-    
+
     const complaint = await complaintService.submitComplaint({
-      apmc,
+      apmc: finalApmc,
       subject,
       description,
-      userId,
+      userId: uid,
     });
-    
+
     res.status(201).json({
       success: true,
       message: 'Complaint submitted successfully',
@@ -37,16 +48,16 @@ const submitComplaint = async (req, res, next) => {
 const fetchComplaints = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    
+
     if (!userId) {
       return res.status(400).json({
         success: false,
         message: 'User ID is required',
       });
     }
-    
+
     const complaints = await complaintService.fetchComplaints(userId);
-    
+
     res.status(200).json({
       success: true,
       data: complaints,

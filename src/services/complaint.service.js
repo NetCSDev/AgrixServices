@@ -11,13 +11,13 @@ const ComplaintStatus = {
 /**
  * Submit a new complaint
  */
-const submitComplaint = async ({ apmc, subject, description, userid }) => {
+const submitComplaint = async ({ apmc, subject, description, userId }) => {
   const result = await pool.query(
     `INSERT INTO complaints (apmc, subject, description, status, user_id) 
      VALUES ($1, $2, $3, $4, $5) 
      RETURNING id, apmc, subject, description, status, 
-               created_at as "createdAt", updated_at as "updatedAt", user_id as "userid"`,
-    [apmc, subject, description, ComplaintStatus.PENDING, userid]
+               created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"`,
+    [apmc, subject, description, ComplaintStatus.PENDING, userId]
   );
   
   return result.rows[0];
@@ -26,14 +26,14 @@ const submitComplaint = async ({ apmc, subject, description, userid }) => {
 /**
  * Fetch all complaints for a specific user
  */
-const fetchComplaints = async (userid) => {
+const fetchComplaints = async (userId) => {
   const result = await pool.query(
     `SELECT id, apmc, subject, description, status, 
             created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"
      FROM complaints 
      WHERE user_id = $1 
      ORDER BY created_at DESC`,
-    [userid]
+    [userId]
   );
   
   return result.rows;
