@@ -16,7 +16,7 @@ const submitComplaint = async ({ apmc, subject, description, userid }) => {
     `INSERT INTO complaints (apmc, subject, description, status, user_id) 
      VALUES ($1, $2, $3, $4, $5) 
      RETURNING id, apmc, subject, description, status, 
-               created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"`,
+               created_at as "createdAt", updated_at as "updatedAt", user_id as "userid"`,
     [apmc, subject, description, ComplaintStatus.PENDING, userid]
   );
   
