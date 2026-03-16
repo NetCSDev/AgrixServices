@@ -1,0 +1,240 @@
+-- Table: public.apmc
+
+-- DROP TABLE IF EXISTS public.apmc;
+
+CREATE TABLE IF NOT EXISTS public.apmc
+(
+    id character varying(50) COLLATE pg_catalog."default" NOT NULL DEFAULT (gen_random_uuid())::text,
+    name character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT apmc_pkey PRIMARY KEY (id),
+    CONSTRAINT apmc_name_key UNIQUE (name)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.apmc
+    OWNER to postgres;
+	
+	
+	
+-- Table: public.complaints
+
+-- DROP TABLE IF EXISTS public.complaints;
+
+CREATE TABLE IF NOT EXISTS public.complaints
+(
+    id character varying(50) COLLATE pg_catalog."default" NOT NULL DEFAULT (gen_random_uuid())::text,
+    apmc character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    subject character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    description text COLLATE pg_catalog."default" NOT NULL,
+    status character varying(50) COLLATE pg_catalog."default" DEFAULT 'PENDING'::character varying,
+    user_id character varying(50) COLLATE pg_catalog."default",
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT complaints_pkey PRIMARY KEY (id),
+    CONSTRAINT complaints_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.complaints
+    OWNER to postgres;
+-- Index: idx_complaints_created_at
+
+-- DROP INDEX IF EXISTS public.idx_complaints_created_at;
+
+CREATE INDEX IF NOT EXISTS idx_complaints_created_at
+    ON public.complaints USING btree
+    (created_at ASC NULLS LAST)
+    WITH (fillfactor=100, deduplicate_items=True)
+    TABLESPACE pg_default;
+-- Index: idx_complaints_status
+
+-- DROP INDEX IF EXISTS public.idx_complaints_status;
+
+CREATE INDEX IF NOT EXISTS idx_complaints_status
+    ON public.complaints USING btree
+    (status COLLATE pg_catalog."default" ASC NULLS LAST)
+    WITH (fillfactor=100, deduplicate_items=True)
+    TABLESPACE pg_default;
+-- Index: idx_complaints_user_id
+
+-- DROP INDEX IF EXISTS public.idx_complaints_user_id;
+
+CREATE INDEX IF NOT EXISTS idx_complaints_user_id
+    ON public.complaints USING btree
+    (user_id COLLATE pg_catalog."default" ASC NULLS LAST)
+    WITH (fillfactor=100, deduplicate_items=True)
+    TABLESPACE pg_default;
+	
+	
+
+-- Table: public.news_articles
+
+-- DROP TABLE IF EXISTS public.news_articles;
+
+CREATE TABLE IF NOT EXISTS public.news_articles
+(
+    id character varying(50) COLLATE pg_catalog."default" NOT NULL DEFAULT (gen_random_uuid())::text,
+    title character varying(500) COLLATE pg_catalog."default" NOT NULL,
+    description text COLLATE pg_catalog."default" NOT NULL,
+    content text COLLATE pg_catalog."default" NOT NULL,
+    image_url text COLLATE pg_catalog."default",
+    source character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    author character varying(255) COLLATE pg_catalog."default",
+    published_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    url text COLLATE pg_catalog."default" NOT NULL,
+    category character varying(100) COLLATE pg_catalog."default",
+    tags text[] COLLATE pg_catalog."default",
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT news_articles_pkey PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.news_articles
+    OWNER to postgres;
+-- Index: idx_news_category
+
+-- DROP INDEX IF EXISTS public.idx_news_category;
+
+CREATE INDEX IF NOT EXISTS idx_news_category
+    ON public.news_articles USING btree
+    (category COLLATE pg_catalog."default" ASC NULLS LAST)
+    WITH (fillfactor=100, deduplicate_items=True)
+    TABLESPACE pg_default;
+-- Index: idx_news_content
+
+-- DROP INDEX IF EXISTS public.idx_news_content;
+
+CREATE INDEX IF NOT EXISTS idx_news_content
+    ON public.news_articles USING gin
+    (to_tsvector('english'::regconfig, content))
+    WITH (fastupdate=True, gin_pending_list_limit=4194304)
+    TABLESPACE pg_default;
+-- Index: idx_news_description
+
+-- DROP INDEX IF EXISTS public.idx_news_description;
+
+CREATE INDEX IF NOT EXISTS idx_news_description
+    ON public.news_articles USING gin
+    (to_tsvector('english'::regconfig, description))
+    WITH (fastupdate=True, gin_pending_list_limit=4194304)
+    TABLESPACE pg_default;
+-- Index: idx_news_published_at
+
+-- DROP INDEX IF EXISTS public.idx_news_published_at;
+
+CREATE INDEX IF NOT EXISTS idx_news_published_at
+    ON public.news_articles USING btree
+    (published_at DESC NULLS FIRST)
+    WITH (fillfactor=100, deduplicate_items=True)
+    TABLESPACE pg_default;
+-- Index: idx_news_title
+
+-- DROP INDEX IF EXISTS public.idx_news_title;
+
+CREATE INDEX IF NOT EXISTS idx_news_title
+    ON public.news_articles USING gin
+    (to_tsvector('english'::regconfig, title::text))
+    WITH (fastupdate=True, gin_pending_list_limit=4194304)
+    TABLESPACE pg_default;
+	
+	
+-- Table: public.otp_verifications
+
+-- DROP TABLE IF EXISTS public.otp_verifications;
+
+CREATE TABLE IF NOT EXISTS public.otp_verifications
+(
+    id integer NOT NULL DEFAULT nextval('otp_verifications_id_seq'::regclass),
+    user_id character varying(50) COLLATE pg_catalog."default",
+    mobile character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    otp character varying(6) COLLATE pg_catalog."default" NOT NULL,
+    expires_at timestamp without time zone NOT NULL,
+    is_verified boolean DEFAULT false,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT otp_verifications_pkey PRIMARY KEY (id),
+    CONSTRAINT otp_verifications_user_id_key UNIQUE (user_id),
+    CONSTRAINT otp_verifications_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.users (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.otp_verifications
+    OWNER to postgres;
+-- Index: idx_otp_mobile
+
+-- DROP INDEX IF EXISTS public.idx_otp_mobile;
+
+CREATE INDEX IF NOT EXISTS idx_otp_mobile
+    ON public.otp_verifications USING btree
+    (mobile COLLATE pg_catalog."default" ASC NULLS LAST)
+    WITH (fillfactor=100, deduplicate_items=True)
+    TABLESPACE pg_default;
+-- Index: idx_otp_user_id
+
+-- DROP INDEX IF EXISTS public.idx_otp_user_id;
+
+CREATE INDEX IF NOT EXISTS idx_otp_user_id
+    ON public.otp_verifications USING btree
+    (user_id COLLATE pg_catalog."default" ASC NULLS LAST)
+    WITH (fillfactor=100, deduplicate_items=True)
+    TABLESPACE pg_default;
+	
+	
+-- Table: public.subjects
+
+-- DROP TABLE IF EXISTS public.subjects;
+
+CREATE TABLE IF NOT EXISTS public.subjects
+(
+    id character varying(50) COLLATE pg_catalog."default" NOT NULL DEFAULT (gen_random_uuid())::text,
+    name character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT subjects_pkey PRIMARY KEY (id),
+    CONSTRAINT subjects_name_key UNIQUE (name)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.subjects
+    OWNER to postgres;
+	
+	
+-- Table: public.users
+
+-- DROP TABLE IF EXISTS public.users;
+
+CREATE TABLE IF NOT EXISTS public.users
+(
+    id character varying(50) COLLATE pg_catalog."default" NOT NULL DEFAULT (gen_random_uuid())::text,
+    name character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    mobile character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    language character varying(50) COLLATE pg_catalog."default" DEFAULT 'en'::character varying,
+    address text COLLATE pg_catalog."default",
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT users_pkey PRIMARY KEY (id),
+    CONSTRAINT users_mobile_key UNIQUE (mobile)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.users
+    OWNER to postgres;
+-- Index: idx_users_mobile
+
+-- DROP INDEX IF EXISTS public.idx_users_mobile;
+
+CREATE INDEX IF NOT EXISTS idx_users_mobile
+    ON public.users USING btree
+    (mobile COLLATE pg_catalog."default" ASC NULLS LAST)
+    WITH (fillfactor=100, deduplicate_items=True)
+    TABLESPACE pg_default;
