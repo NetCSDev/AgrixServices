@@ -27,15 +27,16 @@ const loadEnvironment = () => {
   console.log('DATABASE_URL loaded:', process.env.DATABASE_URL ? 'YES' : 'NO');
 };
 
-// Configuration object
+// Configuration object — uses getters so values are read from process.env
+// at access time, not at module load time (which is before loadEnvironment() runs).
 const config = {
-  env: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.PORT, 10) || 5000,
-  databaseUrl: process.env.DATABASE_URL,
-  jwtSecret: process.env.JWT_SECRET,
-  jwtExpire: process.env.JWT_EXPIRE || '30d',
-  corsOrigin: process.env.CORS_ORIGIN || '*',
-  logLevel: process.env.LOG_LEVEL || 'info',
+  get env()        { return process.env.NODE_ENV || 'development'; },
+  get port()       { return parseInt(process.env.PORT, 10) || 5000; },
+  get databaseUrl(){ return process.env.DATABASE_URL; },
+  get jwtSecret()  { return process.env.JWT_SECRET; },
+  get jwtExpire()  { return process.env.JWT_EXPIRE || '30d'; },
+  get corsOrigin() { return process.env.CORS_ORIGIN || '*'; },
+  get logLevel()   { return process.env.LOG_LEVEL || 'info'; },
 };
 
 // Validate required environment variables

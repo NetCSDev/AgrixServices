@@ -1,5 +1,7 @@
+const jwt = require('jsonwebtoken');
 const { pool } = require('../config/db');
 const smsService = require('./sms.service');
+const { config } = require('../config/environment');
 
 // Generate 6-digit OTP
 const generateOTP = () => {
@@ -144,9 +146,13 @@ const verifyOTP = async (userId, mobile, otp) => {
   
   const user = userResult.rows[0];
   
-  // Generate token (simplified - in production use JWT)
-  const token = Buffer.from(`${user.id}:${Date.now()}`).toString('base64');
-  
+  // Sign JWT with user identity
+  const token = jwt.sign(
+    { id: user.id, mobile: user.mobile },
+    config.jwtSecret,
+    { expiresIn: config.jwtExpire }
+  );
+
   return {
     token,
     user: {

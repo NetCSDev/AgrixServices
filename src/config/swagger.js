@@ -93,7 +93,7 @@ const swaggerDefinition = {
           message: { type: 'string', example: 'OTP sent successfully' },
           userId: { type: 'string', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' },
           mobile: { type: 'string', example: '+919876543210' },
-          requiresProfileCompletion: { type: 'boolean', example: false },
+          requiresOTP: { type: 'boolean', example: true },
         },
       },
       SignUpRequest: {
@@ -108,17 +108,18 @@ const swaggerDefinition = {
       },
       VerifyOTPRequest: {
         type: 'object',
-        required: ['mobile', 'otp'],
+        required: ['userId', 'mobile', 'otp'],
         properties: {
+          userId: { type: 'string', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' },
           mobile: { type: 'string', example: '+919876543210' },
           otp: { type: 'string', example: '123456' },
         },
       },
       SubmitComplaintRequest: {
         type: 'object',
-        required: ['userId', 'apmc', 'subject', 'description'],
+        required: ['apmc', 'subject', 'description'],
+        description: 'userId is taken from the authenticated JWT — do not send it in the body',
         properties: {
-          userId: { type: 'string', example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' },
           apmc: { type: 'string', example: 'Mumbai APMC' },
           subject: { type: 'string', example: 'Price Issue' },
           description: { type: 'string', example: 'Incorrect pricing for wheat' },
@@ -171,6 +172,16 @@ const swaggerDefinition = {
           },
         },
       },
+      ForbiddenError: {
+        description: 'Forbidden — you do not have permission to access this resource',
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/Error',
+            },
+          },
+        },
+      },
     },
   },
   tags: [
@@ -191,6 +202,7 @@ const swaggerDefinition = {
       description: 'News articles management endpoints',
     },
   ],
+  security: [{ bearerAuth: [] }],
 };
 
 const options = {

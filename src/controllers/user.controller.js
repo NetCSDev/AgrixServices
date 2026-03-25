@@ -47,9 +47,12 @@ const createUser = async (req, res, next) => {
 
 // @desc    Update user
 // @route   PUT /api/users/:id
-// @access  Public
+// @access  Private
 const updateUser = async (req, res, next) => {
   try {
+    if (req.user.id !== req.params.id) {
+      return res.status(403).json({ success: false, error: 'Forbidden' });
+    }
     const user = await userService.updateUser(req.params.id, req.body);
     res.status(200).json({
       success: true,
@@ -62,9 +65,12 @@ const updateUser = async (req, res, next) => {
 
 // @desc    Delete user
 // @route   DELETE /api/users/:id
-// @access  Public
+// @access  Private
 const deleteUser = async (req, res, next) => {
   try {
+    if (req.user.id !== req.params.id) {
+      return res.status(403).json({ success: false, error: 'Forbidden' });
+    }
     await userService.deleteUser(req.params.id);
     res.status(200).json({
       success: true,

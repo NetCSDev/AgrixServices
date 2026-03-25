@@ -16,12 +16,13 @@ const submitComplaint = async (req, res, next) => {
     } = req.body;
 
     const finalApmc = apmc || apmc_name;
-    const uid = userId || user_id;
+    // Use the authenticated user's ID from the JWT — ignore any userId in the body
+    const uid = req.user.id;
 
-    if (!finalApmc || !subject || !description || !uid) {
+    if (!finalApmc || !subject || !description) {
       return res.status(400).json({
         success: false,
-        message: 'APMC, subject, description, and userId are required',
+        message: 'APMC, subject, and description are required',
       });
     }
 
@@ -49,11 +50,8 @@ const fetchComplaints = async (req, res, next) => {
   try {
     const { userId } = req.params;
 
-    if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: 'User ID is required',
-      });
+    if (req.user.id !== userId) {
+      return res.status(403).json({ success: false, error: 'Forbidden' });
     }
 
     const complaints = await complaintService.fetchComplaints(userId);

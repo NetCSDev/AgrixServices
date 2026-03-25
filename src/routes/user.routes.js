@@ -7,6 +7,7 @@ const {
   updateUser,
   deleteUser,
 } = require('../controllers/user.controller');
+const { protect } = require('../middlewares/auth.middleware');
 
 /**
  * @swagger
@@ -14,6 +15,7 @@ const {
  *   get:
  *     summary: Get all users
  *     tags: [Users]
+ *     security: []
  *     description: Retrieve a list of all users
  *     parameters:
  *       - in: query
@@ -46,6 +48,7 @@ const {
  *   post:
  *     summary: Create a new user
  *     tags: [Users]
+ *     security: []
  *     description: Create a new user account
  *     requestBody:
  *       required: true
@@ -98,6 +101,8 @@ router.route('/').get(getUsers).post(createUser);
  *                   example: true
  *                 data:
  *                   $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
  *       404:
  *         $ref: '#/components/responses/NotFoundError'
  *   put:
@@ -143,6 +148,10 @@ router.route('/').get(getUsers).post(createUser);
  *                   example: true
  *                 data:
  *                   $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
  *       404:
  *         $ref: '#/components/responses/NotFoundError'
  *   delete:
@@ -170,9 +179,16 @@ router.route('/').get(getUsers).post(createUser);
  *                 message:
  *                   type: string
  *                   example: User deleted successfully
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
  *       404:
  *         $ref: '#/components/responses/NotFoundError'
  */
-router.route('/:id').get(getUserById).put(updateUser).delete(deleteUser);
+router.route('/:id')
+  .get(protect, getUserById)
+  .put(protect, updateUser)
+  .delete(protect, deleteUser);
 
 module.exports = router;

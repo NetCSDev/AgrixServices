@@ -101,6 +101,20 @@ agrixservices/
 └── package.json
 ```
 
+## Environment Variables
+
+The application relies on a few environment variables defined in `.env` files (loaded based on `NODE_ENV`).
+
+- `DATABASE_URL`   – PostgreSQL connection string (required)
+- `JWT_SECRET`     – Secret for JWT tokens (required)
+- `CORS_ORIGIN`    – Allowed CORS origin(s)
+- `FAST2SMS_API_KEY` – (optional) API key for Fast2SMS service. When provided, OTPs will be sent via SMS. If missing, OTPs will be logged to console for development.
+  > **Note:** Fast2SMS requires you to verify your website/app before you can use the OTP Message API. If you see a 400 error complaining about website verification, either complete the process in the Fast2SMS dashboard or switch to the DLT SMS API.
+- `FAST2SMS_SENDER_ID` – (optional) Sender ID to use (default: `IGNYX`).
+- `FAST2SMS_ROUTE`  – (optional) Route for SMS requests (`otp`, `q`, or `dlt`; default `otp`).
+
+Environment files `.env.development`, `.env.staging`, `.env.production` are used depending on `NODE_ENV`.
+
 ## API Endpoints
 
 ### Authentication

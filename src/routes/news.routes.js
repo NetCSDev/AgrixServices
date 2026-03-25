@@ -10,6 +10,7 @@ const {
   deleteNewsArticle,
   getCategories,
 } = require('../controllers/news.controller');
+const { protect } = require('../middlewares/auth.middleware');
 
 /**
  * @swagger
@@ -35,7 +36,7 @@ const {
  *                     type: string
  *                   example: ['policy', 'weather', 'market', 'technology', 'general']
  */
-router.get('/meta/categories', getCategories);
+router.get('/meta/categories', protect, getCategories);
 
 /**
  * @swagger
@@ -92,7 +93,7 @@ router.get('/meta/categories', getCategories);
  *                     hasMore:
  *                       type: boolean
  */
-router.get('/search', searchNewsArticles);
+router.get('/search', protect, searchNewsArticles);
 
 /**
  * @swagger
@@ -149,7 +150,7 @@ router.get('/search', searchNewsArticles);
  *                     hasMore:
  *                       type: boolean
  */
-router.get('/category/:category', fetchNewsByCategory);
+router.get('/category/:category', protect, fetchNewsByCategory);
 
 /**
  * @swagger
@@ -263,8 +264,8 @@ router.get('/category/:category', fetchNewsByCategory);
  *       400:
  *         $ref: '#/components/responses/ValidationError'
  */
-router.get('/', fetchNewsArticles);
-router.post('/', createNewsArticle);
+router.get('/', protect, fetchNewsArticles);
+router.post('/', protect, createNewsArticle);
 
 /**
  * @swagger
@@ -367,8 +368,8 @@ router.post('/', createNewsArticle);
  *       404:
  *         $ref: '#/components/responses/NotFoundError'
  */
-router.get('/:id', getNewsById);
-router.put('/:id', updateNewsArticle);
-router.delete('/:id', deleteNewsArticle);
+router.get('/:id', protect, getNewsById);
+router.put('/:id', protect, updateNewsArticle);
+router.delete('/:id', protect, deleteNewsArticle);
 
 module.exports = router;

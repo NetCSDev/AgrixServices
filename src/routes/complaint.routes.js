@@ -9,6 +9,7 @@ const {
   getAPMCOptions,
   getSubjectOptions,
 } = require('../controllers/complaint.controller');
+const { protect } = require('../middlewares/auth.middleware');
 
 /**
  * @swagger
@@ -34,7 +35,7 @@ const {
  *                     type: string
  *                   example: ['Mumbai APMC', 'Pune APMC', 'Nashik APMC']
  */
-router.get('/apmc/options', getAPMCOptions);
+router.get('/apmc/options', protect, getAPMCOptions);
 
 /**
  * @swagger
@@ -60,7 +61,7 @@ router.get('/apmc/options', getAPMCOptions);
  *                     type: string
  *                   example: ['Price Issue', 'Quality Issue', 'Delay in Payment', 'Other']
  */
-router.get('/subject/options', getSubjectOptions);
+router.get('/subject/options', protect, getSubjectOptions);
 
 /**
  * @swagger
@@ -129,8 +130,8 @@ router.get('/subject/options', getSubjectOptions);
  *                   items:
  *                     $ref: '#/components/schemas/Complaint'
  */
-router.post('/', submitComplaint);
-router.get('/', getAllComplaints);
+router.post('/', protect, submitComplaint);
+router.get('/', protect, getAllComplaints);
 
 /**
  * @swagger
@@ -162,7 +163,7 @@ router.get('/', getAllComplaints);
  *                   items:
  *                     $ref: '#/components/schemas/Complaint'
  */
-router.get('/user/:userId', fetchComplaints);
+router.get('/user/:userId', protect, fetchComplaints);
 
 /**
  * @swagger
@@ -194,7 +195,7 @@ router.get('/user/:userId', fetchComplaints);
  *       404:
  *         $ref: '#/components/responses/NotFoundError'
  */
-router.get('/:id', getComplaintById);
+router.get('/:id', protect, getComplaintById);
 
 /**
  * @swagger
@@ -239,6 +240,6 @@ router.get('/:id', getComplaintById);
  *       404:
  *         $ref: '#/components/responses/NotFoundError'
  */
-router.put('/:id/status', updateComplaintStatus);
+router.put('/:id/status', protect, updateComplaintStatus);
 
 module.exports = router;
